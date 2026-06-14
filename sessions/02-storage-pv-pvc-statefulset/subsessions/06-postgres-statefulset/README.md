@@ -62,9 +62,9 @@ kubectl apply -f subsessions/06-postgres-statefulset/
 ## Check
 
 ```bash
-kubectl get statefulset -n app-storage
-kubectl get pods -n app-storage -l app=postgres,storage-demo=stateful
-kubectl get pvc -n app-storage
+kubectl get statefulset -n tb--storage
+kubectl get pods -n tb-app-storage -l app=postgres,storage-demo=stateful
+kubectl get pvc -n tb-app-storage
 kubectl get pv
 ```
 
