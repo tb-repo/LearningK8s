@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: flask-pod
-  namespace: app-core
+  namespace: tb-app-core
   labels:
     app: flask-pod
     tier: application

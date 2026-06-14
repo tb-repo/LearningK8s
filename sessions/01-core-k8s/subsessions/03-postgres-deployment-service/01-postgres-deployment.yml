@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: app-core
+  namespace: tb-app-core
   labels:
     app: postgres
     tier: data

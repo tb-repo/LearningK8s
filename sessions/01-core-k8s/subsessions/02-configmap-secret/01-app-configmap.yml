@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: app-config
-  namespace: app-core
+  namespace: tb-app-core
 data:
   DB_HOST: postgres
   DB_PORT: "5432"
