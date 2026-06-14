@@ -64,7 +64,7 @@ kubectl apply -f subsessions/01-namespace/
 kubectl apply -f subsessions/02-configmap-secret/
 kubectl apply -f subsessions/03-postgres-deployment-service/
 kubectl apply -f subsessions/05-flask-deployment/
-kubectl apply -f subsessions/06-flask-services/01-flask-service-clusterip.yml
+kubectl apply -f subsessions/06-flask-services/
 ```
 
 Use the standalone Pod sub-session before the Deployment sub-session when teaching Pod fundamentals.
