@@ -14,6 +14,16 @@ kubectl api-resources | grep -i vertical
 kubectl get crd | grep verticalpodautoscalers
 kubectl get pods -n kube-system | grep vpa
 ```
+PS
+kubectl api-resources | Select-String -Pattern "vertical"
+kubectl get crd | Select-String -Pattern "verticalpodautoscalers"
+kubectl get pods -n kube-system | Select-String -Pattern "vpa"
+
+CMD
+kubectl api-resources | findstr /i "vertical"
+kubectl get crd | findstr /i "verticalpodautoscalers"
+kubectl get pods -n kube-system | findstr /i "vpa"
+
 
 Expected resources include:
 
@@ -38,6 +48,13 @@ cd autoscaler/vertical-pod-autoscaler
 ./hack/vpa-up.sh
 ```
 
+Installing VPA using Helm:
+
+helm repo add coco-autoscaler https://kubernetes.github.io/autoscaler
+helm repo update
+helm install vpa coco-autoscaler/vertical-pod-autoscaler --namespace kube-system
+
+
 The script creates:
 
 - VPA CRDs.
@@ -54,6 +71,10 @@ kubectl get crd | grep verticalpodautoscalers
 kubectl get pods -n kube-system | grep vpa
 kubectl api-resources | grep -i vertical
 ```
+
+kubectl get crd | Select-String -Pattern "verticalpodautoscalers"
+kubectl get pods -n kube-system | Select-String -Pattern "vpa"
+kubectl api-resources | Select-String -Pattern "vertical"
 
 ## Metrics Server Requirement
 

@@ -7,7 +7,7 @@ metadata:
   # Name of the object or container
   name: vpa-demo
   # Namespace in which the object is created
-  namespace: app-autoscaling
+  namespace: tb-app-autoscaling
   # Labels used for grouping and selecting objects
   labels:
     # Application label

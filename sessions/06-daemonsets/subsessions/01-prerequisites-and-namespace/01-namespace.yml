@@ -5,7 +5,7 @@ kind: Namespace
 # Object metadata: name, namespace, labels, annotations
 metadata:
   # Name of the object or container
-  name: daemonset-lab
+  name: tb-daemonset-lab
   # Labels used for grouping and selecting objects
   labels:
     purpose: daemonset-training

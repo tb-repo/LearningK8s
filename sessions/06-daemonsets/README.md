@@ -116,15 +116,15 @@ kubectl apply -f subsessions/03-deployment-and-daemonset-mix/
 Check the result:
 
 ```bash
-kubectl get deployments -n daemonset-lab
-kubectl get daemonsets -n daemonset-lab
-kubectl get pods -n daemonset-lab -o wide
+kubectl get deployments -n tb-daemonset-lab
+kubectl get daemonsets -n tb-daemonset-lab
+kubectl get pods -n tb-daemonset-lab -o wide
 ```
 
 Useful watch command:
 
 ```bash
-kubectl get pods -n daemonset-lab -o wide -w
+kubectl get pods -n tb-daemonset-lab -o wide -w
 ```
 
 ## Cleanup

@@ -37,18 +37,38 @@ If these commands work, continue to the Namespace step.
 For EKS, you can install the community Metrics Server add-on:
 
 ```bash
-export CLUSTER_NAME=demo-batch16a
-export AWS_REGION=us-east-2
+export CLUSTER_NAME=tb-k8s-cluster-1
+export AWS_REGION=ap-south-1
+
+PS
+$env:CLUSTER_NAME="tb-k8s-cluster-1"
+$env:AWS_REGION="ap-south-1"
+
+CMD
+set CLUSTER_NAME="tb-k8s-cluster-1"
+set AWS_REGION="ap-south-1"
 
 aws eks describe-addon-versions \
   --addon-name metrics-server \
   --region "$AWS_REGION"
+
+PS
+aws eks describe-addon-versions --addon-name metrics-server --region "$env:AWS_REGION"
+
+CMD
+aws eks describe-addon-versions --addon-name metrics-server --region "%AWS_REGION%"
+
 
 eksctl create addon \
   --cluster "$CLUSTER_NAME" \
   --name metrics-server \
   --region "$AWS_REGION"
 ```
+PS
+eksctl create addon --cluster "$env:CLUSTER_NAME" --name metrics-server --region "$env:AWS_REGION"
+
+CMD
+eksctl create addon --cluster "%CLUSTER_NAME%" --name metrics-server --region "%AWS_REGION%"
 
 If you are not using EKS add-ons, install the upstream manifest:
 

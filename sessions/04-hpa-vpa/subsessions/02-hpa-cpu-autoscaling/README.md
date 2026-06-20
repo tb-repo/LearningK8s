@@ -46,10 +46,10 @@ kubectl apply -f subsessions/02-hpa-cpu-autoscaling/01-cpu-demo-deployment.yml
 Check:
 
 ```bash
-kubectl get deployment cpu-demo -n app-autoscaling
-kubectl get pods -n app-autoscaling -l app=cpu-demo
-kubectl get service cpu-demo -n app-autoscaling
-kubectl top pods -n app-autoscaling
+kubectl get deployment cpu-demo -n tb-app-autoscaling
+kubectl get pods -n tb-app-autoscaling -l app=cpu-demo
+kubectl get service cpu-demo -n tb-app-autoscaling
+kubectl top pods -n tb-app-autoscaling
 ```
 
 ## Apply The HPA
@@ -61,8 +61,8 @@ kubectl apply -f subsessions/02-hpa-cpu-autoscaling/02-cpu-demo-hpa.yml
 Check:
 
 ```bash
-kubectl get hpa cpu-demo -n app-autoscaling
-kubectl describe hpa cpu-demo -n app-autoscaling
+kubectl get hpa cpu-demo -n tb-app-autoscaling
+kubectl describe hpa cpu-demo -n tb-app-autoscaling
 ```
 
 At first, replicas may stay at `1` because there is no load.
@@ -76,13 +76,13 @@ kubectl apply -f subsessions/02-hpa-cpu-autoscaling/03-load-generator.yml
 Watch:
 
 ```bash
-kubectl get hpa -n app-autoscaling -w
+kubectl get hpa -n tb-app-autoscaling -w
 ```
 
 In another terminal:
 
 ```bash
-kubectl get deployment cpu-demo -n app-autoscaling -w
+kubectl get deployment cpu-demo -n tb-app-autoscaling -w
 ```
 
 Expected behavior:
@@ -95,7 +95,7 @@ Expected behavior:
 ## Inspect The Scaling Decision
 
 ```bash
-kubectl describe hpa cpu-demo -n app-autoscaling
+kubectl describe hpa cpu-demo -n tb-app-autoscaling
 ```
 
 Important fields:
@@ -117,7 +117,7 @@ HPA does not always scale down immediately. The manifest includes a scale-down s
 Watch scale down:
 
 ```bash
-kubectl get hpa -n app-autoscaling -w
+kubectl get hpa -n tb-app-autoscaling -w
 ```
 
 ## Manual Reset
@@ -125,8 +125,8 @@ kubectl get hpa -n app-autoscaling -w
 If you want to reset quickly:
 
 ```bash
-kubectl delete hpa cpu-demo -n app-autoscaling
-kubectl scale deployment cpu-demo -n app-autoscaling --replicas=1
+kubectl delete hpa cpu-demo -n tb-app-autoscaling
+kubectl scale deployment cpu-demo -n tb-app-autoscaling --replicas=1
 kubectl apply -f subsessions/02-hpa-cpu-autoscaling/02-cpu-demo-hpa.yml
 ```
 
@@ -143,3 +143,11 @@ kubectl delete -f subsessions/02-hpa-cpu-autoscaling/ --ignore-not-found
 3. Why does HPA update the Deployment instead of creating Pods directly?
 4. What does `maxReplicas` protect against?
 5. Why does scale-down happen slower than scale-up?
+
+## Review Answers
+
+1. The Deployment needs a CPU request so HPA can measure utilization relative to a known requested amount and so the scheduler can reserve capacity for the Pod. Without a CPU request, HPA cannot calculate percent utilization reliably.
+2. When the load generator starts, it sends continuous HTTP traffic to `cpu-demo`, causing the app Pods to consume more CPU. As average CPU utilization rises above the HPA target, the HPA increases the Deployment replica count.
+3. HPA updates the Deployment because the Deployment is the controller responsible for creating and managing Pods. HPA changes the Deployment's desired replica count, and the Deployment then creates or removes Pods to match that target.
+4. `maxReplicas` protects against uncontrolled or excessive scaling by capping the number of Pods the HPA can create. This prevents the workload from consuming too much cluster capacity or creating more replicas than the application or infrastructure can handle.
+5. Scale-down is slower than scale-up because the manifest includes a stabilization window and conservative scale-down policy to avoid pod churn. Kubernetes waits longer before removing Pods so temporary drops in load do not cause repeated scale-down and scale-up cycles.
