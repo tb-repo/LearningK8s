@@ -1,16 +1,28 @@
+# API version of this Kubernetes object
 apiVersion: v1
+# Type of Kubernetes resource
 kind: PersistentVolumeClaim
+# Object metadata: name, namespace, labels, annotations
 metadata:
+  # Name of the object or container
   name: postgres-data-static
+  # Namespace in which the object is created
   namespace: tb-app-storage
+  # Labels used for grouping and selecting objects
   labels:
+    # Application label
     app: postgres
     storage-demo: static
+# Desired state of this object
 spec:
+  # Volume access mode(s)
   accessModes:
     - ReadWriteOnce
+  # StorageClass used for dynamic provisioning
   storageClassName: manual
+  # CPU/memory requests and limits or other resource settings
   resources:
+    # Guaranteed resources requested for scheduling
     requests:
       storage: 1Gi
 

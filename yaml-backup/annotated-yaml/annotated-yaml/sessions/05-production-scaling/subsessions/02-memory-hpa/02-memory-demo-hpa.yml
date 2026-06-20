@@ -1,0 +1,81 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: autoscaling/v2
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: HorizontalPodAutoscaler
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: memory-demo
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: app-scaling-prod
+  # Labels used for grouping and selecting objects
+  # Labels used for grouping and selecting objects
+  labels:
+    app: memory-demo
+    scaling-demo: memory-hpa
+# Desired state of this object
+# Desired state of this object
+spec:
+  # Target Deployment/StatefulSet for this HPA
+  # Target Deployment/StatefulSet for this HPA
+  scaleTargetRef:
+    # API version of this Kubernetes object
+    # API version of this Kubernetes object
+    apiVersion: apps/v1
+    # Type of Kubernetes resource
+    # Type of Kubernetes resource
+    kind: Deployment
+    # Name of the object or container
+    # Name of the object or container
+    name: memory-demo
+  # Minimum pods allowed by HPA
+  # Minimum pods allowed by HPA
+  minReplicas: 1
+  # Maximum pods allowed by HPA
+  # Maximum pods allowed by HPA
+  maxReplicas: 5
+  # Metrics the HPA uses to scale
+  # Metrics the HPA uses to scale
+  metrics:
+    - type: Resource
+      resource:
+        # Name of the object or container
+        # Name of the object or container
+        name: memory
+        # Target value for a metric
+        # Target value for a metric
+        target:
+          type: Utilization
+          averageUtilization: 70
+  # Scaling rules for HPA behavior
+  # Scaling rules for HPA behavior
+  behavior:
+    # Rules for scaling up pods
+    # Rules for scaling up pods
+    scaleUp:
+      # Delay window to stabilize before scaling changes
+      # Delay window to stabilize before scaling changes
+      stabilizationWindowSeconds: 0
+      # Allowed scaling increments and rates
+      # Allowed scaling increments and rates
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+    # Rules for scaling down pods
+    # Rules for scaling down pods
+    scaleDown:
+      # Delay window to stabilize before scaling changes
+      # Delay window to stabilize before scaling changes
+      stabilizationWindowSeconds: 300
+      # Allowed scaling increments and rates
+      # Allowed scaling increments and rates
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60

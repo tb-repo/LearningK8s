@@ -1,0 +1,75 @@
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+kind: Pod
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: flask-pod
+  # Namespace in which the object is created
+  namespace: tb-app-core
+  # Labels used for grouping and selecting objects
+  labels:
+    app: flask-pod
+    tier: application
+# Desired state of this object
+spec:
+  # Container definitions in the pod
+  containers:
+    - name: flask-web
+      # Container image to run
+      image: prashantdey/appk8stutorial:1.0
+      # When Kubernetes pulls the container image
+      imagePullPolicy: IfNotPresent
+      # Ports exposed by this object or container
+      ports:
+        - name: http
+          # Port exposed by the container
+          containerPort: 5000
+      env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              # Name of the object or container
+              name: app-config
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              # Name of the object or container
+              name: app-config
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              # Name of the object or container
+              name: app-secrets
+              key: POSTGRES_DB
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              # Name of the object or container
+              name: app-secrets
+              key: POSTGRES_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              # Name of the object or container
+              name: app-secrets
+              key: POSTGRES_PASSWORD
+        - name: FLASK_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              # Name of the object or container
+              name: app-secrets
+              key: FLASK_SECRET_KEY
+      # CPU/memory requests and limits or other resource settings
+      resources:
+        # Guaranteed resources requested for scheduling
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+        # Maximum resources the container may use
+        limits:
+          cpu: "500m"
+          memory: "256Mi"

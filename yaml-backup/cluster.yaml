@@ -1,0 +1,53 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: tb-k8s-cluster-1
+  region: ap-south-1
+
+# Enable OIDC and create IAM service accounts for addons that need permissions
+iam:
+  withOIDC: true
+  serviceAccounts:
+    - metadata:
+        name: aws-load-balancer-controller
+        namespace: kube-system
+      attachPolicyARNs:
+        - arn:aws:iam::ACCOUNT_ID:policy/AWSLoadBalancerControllerIAMPolicy
+      roleName: eksctl-tb-k8s-cluster-1-aws-load-balancer-controller-Role
+    - metadata:
+        name: ebs-csi-controller-sa
+        namespace: kube-system
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy
+      roleName: eksctl-tb-k8s-cluster-1-ebs-csi-role
+
+managedNodeGroups:
+  - name: standard-workers
+    instanceType: t3.small
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 3
+
+addons:
+  - name: vpc-cni
+    version: latest
+  - name: coredns
+    version: latest
+  - name: kube-proxy
+    version: latest
+  - name: aws-ebs-csi-driver
+    version: latest
+
+# You can add more managed addons or install controllers via Helm after creation.
+
+# If the service account already exists in Kubernetes, use override to attach IAM role:
+# eksctl create iamserviceaccount --cluster tb-k8s-cluster-1 --region ap-south-1 --namespace kube-system --name ebs-csi-controller-sa --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy --approve --override-existing-serviceaccounts
+#
+# If the addon is already present, this command is enough to fix the IAM binding:
+# eksctl create addon --cluster tb-k8s-cluster-1 --region ap-south-1 --name aws-ebs-csi-driver
+
+# kubectl exec -it postgres-stateful-0 -n tb-app-storage -- psql -U appuser -d appdb -c "CREATE TABLE IF NOT EXISTS messages (  id SERIAL PRIMARY KEY,   author VARCHAR(60) NOT NULL, body TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());"
+
+# echo '---'
+
+# kubectl exec -it postgres-stateful-0 -n tb-app-storage -- psql -U appuser -d appdb -c "\dt"

@@ -1,0 +1,20 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: storage.k8s.io/v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: StorageClass
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: ebs-gp3
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp3
+  fsType: ext4
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+

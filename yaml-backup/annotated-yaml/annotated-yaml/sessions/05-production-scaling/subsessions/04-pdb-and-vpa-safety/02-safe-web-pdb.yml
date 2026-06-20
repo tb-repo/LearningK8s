@@ -1,0 +1,32 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: policy/v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: PodDisruptionBudget
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: safe-web
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: app-scaling-prod
+  # Labels used for grouping and selecting objects
+  # Labels used for grouping and selecting objects
+  labels:
+    app: safe-web
+    scaling-demo: pdb-vpa
+# Desired state of this object
+# Desired state of this object
+spec:
+  minAvailable: 2
+  # Selector used to choose matching pods or objects
+  # Selector used to choose matching pods or objects
+  selector:
+    # Label matching rules for selectors
+    # Label matching rules for selectors
+    matchLabels:
+      app: safe-web
+      scaling-demo: pdb-vpa

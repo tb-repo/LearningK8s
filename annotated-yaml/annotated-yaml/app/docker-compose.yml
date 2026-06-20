@@ -1,0 +1,51 @@
+# Compose services and Kubernetes service definitions
+services:
+  db:
+    # Container image to run
+    # Container image to run
+    image: postgres:16-alpine
+    container_name: three-tier-postgres
+    # Environment variables for the container or service
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppassword
+    # Volumes available to the pod
+    # Volumes available to the pod
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    # Build settings for the container image
+    build:
+      context: .
+    # Container image to run
+    # Container image to run
+    image: prashantdey/appk8stutorial:1.0
+    container_name: three-tier-flask
+    # Environment variables for the container or service
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: appdb
+      DB_USER: appuser
+      DB_PASSWORD: apppassword
+      FLASK_SECRET_KEY: local-dev-secret
+    # Ports exposed by this object or container
+    # Ports exposed by this object or container
+    ports:
+      - "5000:5000"
+    # Service startup ordering in Compose
+    depends_on:
+      db:
+        condition: service_healthy
+
+# Volumes available to the pod
+# Volumes available to the pod
+volumes:
+  postgres-data:

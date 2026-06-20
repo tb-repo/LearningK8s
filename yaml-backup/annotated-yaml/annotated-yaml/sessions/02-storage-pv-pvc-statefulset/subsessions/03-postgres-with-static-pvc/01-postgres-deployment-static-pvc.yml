@@ -1,0 +1,124 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: apps/v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: Deployment
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: postgres
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: tb-app-storage
+  # Labels used for grouping and selecting objects
+  # Labels used for grouping and selecting objects
+  labels:
+    app: postgres
+    tier: data
+    storage-demo: static
+# Desired state of this object
+# Desired state of this object
+spec:
+  # Desired number of pod replicas
+  # Desired number of pod replicas
+  replicas: 1
+  # Selector used to choose matching pods or objects
+  # Selector used to choose matching pods or objects
+  selector:
+    # Label matching rules for selectors
+    # Label matching rules for selectors
+    matchLabels:
+      app: postgres
+      tier: data
+      storage-demo: static
+  # Pod template for controllers like Deployment/StatefulSet
+  # Pod template for controllers like Deployment/StatefulSet
+  template:
+    # Object metadata: name, namespace, labels, annotations
+    # Object metadata: name, namespace, labels, annotations
+    metadata:
+      # Labels used for grouping and selecting objects
+      # Labels used for grouping and selecting objects
+      labels:
+        app: postgres
+        tier: data
+        storage-demo: static
+    # Desired state of this object
+    # Desired state of this object
+    spec:
+      # Container definitions in the pod
+      # Container definitions in the pod
+      containers:
+        - name: postgres
+          # Container image to run
+          # Container image to run
+          image: postgres:16-alpine
+          # Ports exposed by this object or container
+          # Ports exposed by this object or container
+          ports:
+            - name: postgres
+              # Port exposed by the container
+              # Port exposed by the container
+              containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  # Name of the object or container
+                  # Name of the object or container
+                  name: app-secrets
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  # Name of the object or container
+                  # Name of the object or container
+                  name: app-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  # Name of the object or container
+                  # Name of the object or container
+                  name: app-secrets
+                  key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec:
+              # Container startup command
+              # Container startup command
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 8
+            periodSeconds: 5
+          # CPU/memory requests and limits or other resource settings
+          # CPU/memory requests and limits or other resource settings
+          resources:
+            # Guaranteed resources requested for scheduling
+            # Guaranteed resources requested for scheduling
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            # Maximum resources the container may use
+            # Maximum resources the container may use
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          # Mount points for volumes inside the container
+          # Mount points for volumes inside the container
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+      # Volumes available to the pod
+      # Volumes available to the pod
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-data-static
+

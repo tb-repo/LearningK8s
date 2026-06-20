@@ -1,77 +1,116 @@
+# API version of this Kubernetes object
 apiVersion: apps/v1
+# Type of Kubernetes resource
 kind: Deployment
+# Object metadata: name, namespace, labels, annotations
 metadata:
+  # Name of the object or container
   name: flask-web
+  # Namespace in which the object is created
   namespace: tb-app-core
+  # Labels used for grouping and selecting objects
   labels:
+    # Application label
     app: flask-web
+    # Tier label for grouping related components
     tier: application
+# Desired state of this object
 spec:
+  # Desired number of pod replicas
   replicas: 0
+  # Selector used to choose matching objects
   selector:
+    # Label matching rules for selectors
     matchLabels:
+      # Application label
       app: flask-web
+      # Tier label for grouping related components
       tier: application
+  # Pod template for controllers like Deployment/StatefulSet
   template:
+    # Object metadata: name, namespace, labels, annotations
     metadata:
+      # Labels used for grouping and selecting objects
       labels:
+        # Application label
         app: flask-web
+        # Tier label for grouping related components
         tier: application
+    # Desired state of this object
     spec:
+      # Container definitions in the pod
       containers:
         - name: flask-web
+          # Container image to run
           image: prashantdey/appk8stutorial:1.0
+          # When Kubernetes pulls the container image
           imagePullPolicy: IfNotPresent
+          # Ports exposed by this object or container
           ports:
             - name: http
+              # Port exposed by the container
               containerPort: 5000
+          # Environment variables for the container
           env:
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
+                  # Name of the object or container
                   name: app-config
                   key: DB_HOST
             - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
+                  # Name of the object or container
                   name: app-config
                   key: DB_PORT
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
+                  # Name of the object or container
                   name: app-secrets
                   key: POSTGRES_DB
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
+                  # Name of the object or container
                   name: app-secrets
                   key: POSTGRES_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  # Name of the object or container
                   name: app-secrets
                   key: POSTGRES_PASSWORD
             - name: FLASK_SECRET_KEY
               valueFrom:
                 secretKeyRef:
+                  # Name of the object or container
                   name: app-secrets
                   key: FLASK_SECRET_KEY
           readinessProbe:
             httpGet:
+              # Filesystem path for a volume
               path: /readyz
+              # Port exposed by the Service or container
               port: 5000
             initialDelaySeconds: 8
             periodSeconds: 5
           livenessProbe:
             httpGet:
+              # Filesystem path for a volume
               path: /healthz
+              # Port exposed by the Service or container
               port: 5000
             initialDelaySeconds: 20
             periodSeconds: 10
+          # CPU/memory requests and limits or other resource settings
           resources:
+            # Guaranteed resources requested for scheduling
             requests:
               cpu: "100m"
               memory: "128Mi"
+            # Maximum resources the container may use
             limits:
               cpu: "500m"
               memory: "256Mi"

@@ -1,0 +1,13 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: Namespace
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: tb-app-core
+

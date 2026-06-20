@@ -1,0 +1,73 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: karpenter.sh/v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: NodePool
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: auto-training
+# Desired state of this object
+# Desired state of this object
+spec:
+  # Pod template for controllers like Deployment/StatefulSet
+  # Pod template for controllers like Deployment/StatefulSet
+  template:
+    # Object metadata: name, namespace, labels, annotations
+    # Object metadata: name, namespace, labels, annotations
+    metadata:
+      # Labels used for grouping and selecting objects
+      # Labels used for grouping and selecting objects
+      labels:
+        billing-team: training
+    # Desired state of this object
+    # Desired state of this object
+    spec:
+      nodeClassRef:
+        group: eks.amazonaws.com
+        # Type of Kubernetes resource
+        # Type of Kubernetes resource
+        kind: NodeClass
+        # Name of the object or container
+        # Name of the object or container
+        name: default
+      requirements:
+        - key: eks.amazonaws.com/instance-category
+          operator: In
+          values:
+            - c
+            - m
+            - r
+        - key: eks.amazonaws.com/instance-cpu
+          operator: In
+          values:
+            - "2"
+            - "4"
+            - "8"
+        - key: kubernetes.io/arch
+          operator: In
+          values:
+            - amd64
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            - on-demand
+        - key: topology.kubernetes.io/zone
+          operator: In
+          values:
+            - us-east-2a
+            - us-east-2b
+            - us-east-2c
+  # Maximum resources the container may use
+  # Maximum resources the container may use
+  limits:
+    cpu: "20"
+    memory: 80Gi
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 1m
+    budgets:
+      - nodes: 10%

@@ -1,0 +1,28 @@
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+kind: Service
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: flask-web-nodeport
+  # Namespace in which the object is created
+  namespace: tb-app-core
+# Desired state of this object
+spec:
+  type: NodePort
+  # Selector used to choose matching pods or objects
+  selector:
+    app: flask-web
+    tier: application
+  # Ports exposed by this object or container
+  ports:
+    - name: http
+      # Network protocol for the port
+      protocol: TCP
+      # Port exposed by the Service or container
+      port: 80
+      # Destination port on the container for Service traffic
+      targetPort: 5000
+      nodePort: 30080
+

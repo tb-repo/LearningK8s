@@ -1,0 +1,16 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: Namespace
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: app-scaling-prod
+  # Labels used for grouping and selecting objects
+  # Labels used for grouping and selecting objects
+  labels:
+    training-session: production-scaling

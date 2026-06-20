@@ -1,25 +1,41 @@
+# API version of this Kubernetes object
 apiVersion: apps/v1
+# Type of Kubernetes resource
 kind: DaemonSet
+# Object metadata: name, namespace, labels, annotations
 metadata:
+  # Name of the object or container
   name: node-reporter
+  # Namespace in which the object is created
   namespace: daemonset-lab
+  # Labels used for grouping and selecting objects
   labels:
+    # Application label
     app: node-reporter
     workload: daemonset
+# Desired state of this object
 spec:
+  # Selector used to choose matching objects
   selector:
+    # Label matching rules for selectors
     matchLabels:
+      # Application label
       app: node-reporter
       workload: daemonset
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 1
+  # Pod template for controllers like Deployment/StatefulSet
   template:
+    # Object metadata: name, namespace, labels, annotations
     metadata:
+      # Labels used for grouping and selecting objects
       labels:
+        # Application label
         app: node-reporter
         workload: daemonset
+    # Desired state of this object
     spec:
       terminationGracePeriodSeconds: 10
       tolerations:
@@ -29,19 +45,25 @@ spec:
         - key: node-role.kubernetes.io/master
           operator: Exists
           effect: NoSchedule
+      # Container definitions in the pod
       containers:
         - name: reporter
+          # Container image to run
           image: busybox:1.36
+          # When Kubernetes pulls the container image
           imagePullPolicy: IfNotPresent
+          # Container startup command
           command:
             - /bin/sh
             - -c
+          # Arguments passed to the command
           args:
             - |
               while true; do
                 echo "$(date) pod=${POD_NAME} node=${NODE_NAME} namespace=${POD_NAMESPACE}";
                 sleep 30;
               done
+          # Environment variables for the container
           env:
             - name: POD_NAME
               valueFrom:
@@ -55,10 +77,13 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+          # CPU/memory requests and limits or other resource settings
           resources:
+            # Guaranteed resources requested for scheduling
             requests:
               cpu: 10m
               memory: 16Mi
+            # Maximum resources the container may use
             limits:
               cpu: 50m
               memory: 64Mi

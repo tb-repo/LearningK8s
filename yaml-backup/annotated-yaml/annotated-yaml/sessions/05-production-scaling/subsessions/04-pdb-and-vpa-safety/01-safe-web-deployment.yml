@@ -1,0 +1,137 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: apps/v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: Deployment
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: safe-web
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: app-scaling-prod
+  # Labels used for grouping and selecting objects
+  # Labels used for grouping and selecting objects
+  labels:
+    app: safe-web
+    scaling-demo: pdb-vpa
+# Desired state of this object
+# Desired state of this object
+spec:
+  # Desired number of pod replicas
+  # Desired number of pod replicas
+  replicas: 3
+  # Selector used to choose matching pods or objects
+  # Selector used to choose matching pods or objects
+  selector:
+    # Label matching rules for selectors
+    # Label matching rules for selectors
+    matchLabels:
+      app: safe-web
+      scaling-demo: pdb-vpa
+  # Pod template for controllers like Deployment/StatefulSet
+  # Pod template for controllers like Deployment/StatefulSet
+  template:
+    # Object metadata: name, namespace, labels, annotations
+    # Object metadata: name, namespace, labels, annotations
+    metadata:
+      # Labels used for grouping and selecting objects
+      # Labels used for grouping and selecting objects
+      labels:
+        app: safe-web
+        scaling-demo: pdb-vpa
+    # Desired state of this object
+    # Desired state of this object
+    spec:
+      # Container definitions in the pod
+      # Container definitions in the pod
+      containers:
+        - name: safe-web
+          # Container image to run
+          # Container image to run
+          image: nginx:1.27
+          # When Kubernetes pulls the container image
+          # When Kubernetes pulls the container image
+          imagePullPolicy: IfNotPresent
+          # Ports exposed by this object or container
+          # Ports exposed by this object or container
+          ports:
+            - name: http
+              # Port exposed by the container
+              # Port exposed by the container
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              # Port exposed by the Service or container
+              # Port exposed by the Service or container
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              # Port exposed by the Service or container
+              # Port exposed by the Service or container
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          # CPU/memory requests and limits or other resource settings
+          # CPU/memory requests and limits or other resource settings
+          resources:
+            # Guaranteed resources requested for scheduling
+            # Guaranteed resources requested for scheduling
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            # Maximum resources the container may use
+            # Maximum resources the container may use
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: Service
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: safe-web
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: app-scaling-prod
+  # Labels used for grouping and selecting objects
+  # Labels used for grouping and selecting objects
+  labels:
+    app: safe-web
+    scaling-demo: pdb-vpa
+# Desired state of this object
+# Desired state of this object
+spec:
+  type: ClusterIP
+  # Selector used to choose matching pods or objects
+  # Selector used to choose matching pods or objects
+  selector:
+    app: safe-web
+    scaling-demo: pdb-vpa
+  # Ports exposed by this object or container
+  # Ports exposed by this object or container
+  ports:
+    - name: http
+      # Network protocol for the port
+      # Network protocol for the port
+      protocol: TCP
+      # Port exposed by the Service or container
+      # Port exposed by the Service or container
+      port: 80
+      # Destination port on the container for Service traffic
+      # Destination port on the container for Service traffic
+      targetPort: 80

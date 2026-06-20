@@ -1,0 +1,38 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: Service
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: postgres
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: tb-app-storage
+# Desired state of this object
+# Desired state of this object
+spec:
+  type: ClusterIP
+  # Selector used to choose matching pods or objects
+  # Selector used to choose matching pods or objects
+  selector:
+    # Application label
+    app: postgres
+    # Tier label for grouping related components
+    tier: data
+    storage-demo: static
+  # Ports exposed by this object or container
+  # Ports exposed by this object or container
+  ports:
+    - name: postgres
+      # Port exposed by the Service or container
+      # Port exposed by the Service or container
+      port: 5432
+      # Destination port on the container for Service traffic
+      # Destination port on the container for Service traffic
+      targetPort: 5432
+

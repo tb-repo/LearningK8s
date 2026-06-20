@@ -1,0 +1,87 @@
+# API version of this Kubernetes object
+apiVersion: apps/v1
+# Type of Kubernetes resource
+kind: Deployment
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: vpa-demo
+  # Namespace in which the object is created
+  namespace: app-autoscaling
+  # Labels used for grouping and selecting objects
+  labels:
+    app: vpa-demo
+    autoscaling-demo: vpa
+# Desired state of this object
+spec:
+  # Desired number of pod replicas
+  replicas: 1
+  # Selector used to choose matching pods or objects
+  selector:
+    # Label matching rules for selectors
+    matchLabels:
+      app: vpa-demo
+      autoscaling-demo: vpa
+  # Pod template for controllers like Deployment/StatefulSet
+  template:
+    # Object metadata: name, namespace, labels, annotations
+    metadata:
+      # Labels used for grouping and selecting objects
+      labels:
+        app: vpa-demo
+        autoscaling-demo: vpa
+    # Desired state of this object
+    spec:
+      # Container definitions in the pod
+      containers:
+        - name: vpa-demo
+          # Container image to run
+          image: registry.k8s.io/hpa-example
+          # When Kubernetes pulls the container image
+          imagePullPolicy: IfNotPresent
+          # Ports exposed by this object or container
+          ports:
+            - name: http
+              # Port exposed by the container
+              containerPort: 80
+          # CPU/memory requests and limits or other resource settings
+          resources:
+            # Guaranteed resources requested for scheduling
+            requests:
+              cpu: "25m"
+              memory: "64Mi"
+            # Maximum resources the container may use
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+kind: Service
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: vpa-demo
+  # Namespace in which the object is created
+  namespace: app-autoscaling
+  # Labels used for grouping and selecting objects
+  labels:
+    app: vpa-demo
+    autoscaling-demo: vpa
+# Desired state of this object
+spec:
+  type: ClusterIP
+  # Selector used to choose matching pods or objects
+  selector:
+    app: vpa-demo
+    autoscaling-demo: vpa
+  # Ports exposed by this object or container
+  ports:
+    - name: http
+      # Network protocol for the port
+      protocol: TCP
+      # Port exposed by the Service or container
+      port: 80
+      # Destination port on the container for Service traffic
+      targetPort: 80

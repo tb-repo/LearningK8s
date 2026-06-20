@@ -1,0 +1,194 @@
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+kind: Service
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: postgres-headless
+  # Namespace in which the object is created
+  namespace: app-ingress
+# Desired state of this object
+spec:
+  # Cluster IP for Services; None means headless
+  clusterIP: None
+  # Selector used to choose matching pods or objects
+  selector:
+    # Application label
+    app: postgres
+    # Tier label for grouping related components
+    tier: data
+    # Session label for a learning scenario
+    session: ingress
+  # Ports exposed by this object or container
+  ports:
+    - name: postgres
+      # Port exposed by the Service or container
+      port: 5432
+      # Destination port on the container for Service traffic
+      targetPort: 5432
+---
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+kind: Service
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: postgres
+  # Namespace in which the object is created
+  namespace: app-ingress
+# Desired state of this object
+spec:
+  type: ClusterIP
+  # Selector used to choose matching pods or objects
+  selector:
+    # Application label
+    app: postgres
+    # Tier label for grouping related components
+    tier: data
+    # Session label for a learning scenario
+    session: ingress
+  # Ports exposed by this object or container
+  ports:
+    - name: postgres
+      # Port exposed by the Service or container
+      port: 5432
+      # Destination port on the container for Service traffic
+      targetPort: 5432
+---
+# API version of this Kubernetes object
+apiVersion: apps/v1
+# Type of Kubernetes resource
+kind: StatefulSet
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: postgres-stateful
+  # Namespace in which the object is created
+  namespace: app-ingress
+  # Labels used for grouping and selecting objects
+  labels:
+    # Application label
+    app: postgres
+    # Tier label for grouping related components
+    tier: data
+    # Session label for a learning scenario
+    session: ingress
+# Desired state of this object
+spec:
+  # Headless service used by StatefulSet for stable pod DNS
+  serviceName: postgres-headless
+  # Desired number of pod replicas
+  replicas: 1
+  # Selector used to choose matching pods or objects
+  selector:
+    # Label matching rules for selectors
+    matchLabels:
+      # Application label
+      app: postgres
+      # Tier label for grouping related components
+      tier: data
+      # Session label for a learning scenario
+      session: ingress
+  # Pod template for controllers like Deployment/StatefulSet
+  template:
+    # Object metadata: name, namespace, labels, annotations
+    metadata:
+      # Labels used for grouping and selecting objects
+      labels:
+        # Application label
+        app: postgres
+        # Tier label for grouping related components
+        tier: data
+        # Session label for a learning scenario
+        session: ingress
+    # Desired state of this object
+    spec:
+      # Container definitions in the pod
+      containers:
+        - name: postgres
+          # Container image to run
+          image: postgres:16-alpine
+          # Ports exposed by this object or container
+          ports:
+            - name: postgres
+              # Port exposed by the container
+              containerPort: 5432
+          # Environment variables for the container
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  # Name of the object or container
+                  name: app-secrets
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  # Name of the object or container
+                  name: app-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  # Name of the object or container
+                  name: app-secrets
+                  key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec:
+              # Container startup command
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 8
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              # Container startup command
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          # CPU/memory requests and limits or other resource settings
+          resources:
+            # Guaranteed resources requested for scheduling
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            # Maximum resources the container may use
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          # Mount points for volumes inside the container
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+  # PVC templates each StatefulSet pod creates
+  volumeClaimTemplates:
+    - metadata:
+        # Name of the object or container
+        name: postgres-data
+        # Labels used for grouping and selecting objects
+        labels:
+          # Application label
+          app: postgres
+          # Session label for a learning scenario
+          session: ingress
+      # Desired state of this object
+      spec:
+        # Allowed access mode(s) for the volume
+        accessModes:
+          - ReadWriteOnce
+        # StorageClass used for dynamic provisioning
+        storageClassName: ebs-gp3
+        # CPU/memory requests and limits or other resource settings
+        resources:
+          # Guaranteed resources requested for scheduling
+          requests:
+            storage: 1Gi

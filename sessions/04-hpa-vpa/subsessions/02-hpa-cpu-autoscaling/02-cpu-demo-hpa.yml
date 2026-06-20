@@ -1,29 +1,50 @@
+# API version of this Kubernetes object
 apiVersion: autoscaling/v2
+# Type of Kubernetes resource
 kind: HorizontalPodAutoscaler
+# Object metadata: name, namespace, labels, annotations
 metadata:
+  # Name of the object or container
   name: cpu-demo
-  namespace: app-autoscaling
+  # Namespace in which the object is created
+  namespace: tb-app-autoscaling
+  # Labels used for grouping and selecting objects
   labels:
+    # Application label
     app: cpu-demo
     autoscaling-demo: hpa
+# Desired state of this object
 spec:
+  # Target Deployment/StatefulSet for this HPA
   scaleTargetRef:
+    # API version of this Kubernetes object
     apiVersion: apps/v1
+    # Type of Kubernetes resource
     kind: Deployment
+    # Name of the object or container
     name: cpu-demo
+  # Minimum pods allowed by HPA
   minReplicas: 1
+  # Maximum pods allowed by HPA
   maxReplicas: 6
+  # Metrics the HPA uses to scale
   metrics:
     - type: Resource
       resource:
+        # Name of the object or container
         name: cpu
+        # Target object or metric
         target:
           type: Utilization
           averageUtilization: 50
+  # Scaling rules for HPA behavior
   behavior:
+    # Rules for scaling up pods
     scaleUp:
+      # Delay window to stabilize before scaling changes
       stabilizationWindowSeconds: 0
       selectPolicy: Max
+      # Allowed scaling increments and rates
       policies:
         - type: Percent
           value: 100
@@ -31,8 +52,11 @@ spec:
         - type: Pods
           value: 2
           periodSeconds: 30
+    # Rules for scaling down pods
     scaleDown:
+      # Delay window to stabilize before scaling changes
       stabilizationWindowSeconds: 180
+      # Allowed scaling increments and rates
       policies:
         - type: Percent
           value: 50

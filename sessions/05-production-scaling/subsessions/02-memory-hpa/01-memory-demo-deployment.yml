@@ -1,30 +1,52 @@
+# API version of this Kubernetes object
 apiVersion: apps/v1
+# Type of Kubernetes resource
 kind: Deployment
+# Object metadata: name, namespace, labels, annotations
 metadata:
+  # Name of the object or container
   name: memory-demo
+  # Namespace in which the object is created
   namespace: app-scaling-prod
+  # Labels used for grouping and selecting objects
   labels:
+    # Application label
     app: memory-demo
     scaling-demo: memory-hpa
+# Desired state of this object
 spec:
+  # Desired number of pod replicas
   replicas: 1
+  # Selector used to choose matching objects
   selector:
+    # Label matching rules for selectors
     matchLabels:
+      # Application label
       app: memory-demo
       scaling-demo: memory-hpa
+  # Pod template for controllers like Deployment/StatefulSet
   template:
+    # Object metadata: name, namespace, labels, annotations
     metadata:
+      # Labels used for grouping and selecting objects
       labels:
+        # Application label
         app: memory-demo
         scaling-demo: memory-hpa
+    # Desired state of this object
     spec:
+      # Container definitions in the pod
       containers:
         - name: memory-demo
+          # Container image to run
           image: python:3.12-alpine
+          # When Kubernetes pulls the container image
           imagePullPolicy: IfNotPresent
+          # Container startup command
           command:
             - python
             - -c
+          # Arguments passed to the command
           args:
             - |
               from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -52,44 +74,67 @@ spec:
                       self.wfile.write(body.encode())
 
               HTTPServer(("0.0.0.0", 8080), Handler).serve_forever()
+          # Ports exposed by this object or container
           ports:
             - name: http
+              # Port exposed by the container
               containerPort: 8080
           readinessProbe:
             httpGet:
+              # Filesystem path for a volume
               path: /readyz
+              # Port exposed by the Service or container
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 5
           livenessProbe:
             httpGet:
+              # Filesystem path for a volume
               path: /healthz
+              # Port exposed by the Service or container
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 10
+          # CPU/memory requests and limits or other resource settings
           resources:
+            # Guaranteed resources requested for scheduling
             requests:
               cpu: "50m"
               memory: "64Mi"
+            # Maximum resources the container may use
             limits:
               cpu: "250m"
               memory: "192Mi"
 ---
+# API version of this Kubernetes object
 apiVersion: v1
+# Type of Kubernetes resource
 kind: Service
+# Object metadata: name, namespace, labels, annotations
 metadata:
+  # Name of the object or container
   name: memory-demo
+  # Namespace in which the object is created
   namespace: app-scaling-prod
+  # Labels used for grouping and selecting objects
   labels:
+    # Application label
     app: memory-demo
     scaling-demo: memory-hpa
+# Desired state of this object
 spec:
   type: ClusterIP
+  # Selector used to choose matching objects
   selector:
+    # Application label
     app: memory-demo
     scaling-demo: memory-hpa
+  # Ports exposed by this object or container
   ports:
     - name: http
+      # Network protocol for the port
       protocol: TCP
+      # Port exposed by the Service or container
       port: 80
+      # Destination port on the container for Service traffic
       targetPort: 8080

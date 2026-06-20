@@ -1,0 +1,40 @@
+# API version of this Kubernetes object
+apiVersion: autoscaling.k8s.io/v1
+# Type of Kubernetes resource
+kind: VerticalPodAutoscaler
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: safe-web
+  # Namespace in which the object is created
+  namespace: app-scaling-prod
+  # Labels used for grouping and selecting objects
+  labels:
+    app: safe-web
+    scaling-demo: pdb-vpa
+# Desired state of this object
+spec:
+  # Object referenced by autoscaler
+  targetRef:
+    # API version of this Kubernetes object
+    apiVersion: apps/v1
+    # Type of Kubernetes resource
+    kind: Deployment
+    # Name of the object or container
+    name: safe-web
+  # How the VPA should apply recommended changes
+  updatePolicy:
+    updateMode: "Off"
+  # Resource constraints for VPA-managed containers
+  resourcePolicy:
+    containerPolicies:
+      - containerName: safe-web
+        controlledResources:
+          - cpu
+          - memory
+        minAllowed:
+          cpu: "50m"
+          memory: "64Mi"
+        maxAllowed:
+          cpu: "1"
+          memory: "1Gi"

@@ -1,65 +1,99 @@
+# API version of this Kubernetes object
 apiVersion: apps/v1
+# Type of Kubernetes resource
 kind: Deployment
+# Object metadata: name, namespace, labels, annotations
 metadata:
+  # Name of the object or container
   name: postgres
+  # Namespace in which the object is created
   namespace: tb-app-core
+  # Labels used for grouping and selecting objects
   labels:
+    # Application label
     app: postgres
+    # Tier label for grouping related components
     tier: data
+# Desired state of this object
 spec:
+  # Desired number of pod replicas
   replicas: 0
+  # Selector used to choose matching objects
   selector:
+    # Label matching rules for selectors
     matchLabels:
+      # Application label
       app: postgres
+      # Tier label for grouping related components
       tier: data
+  # Pod template for controllers like Deployment/StatefulSet
   template:
+    # Object metadata: name, namespace, labels, annotations
     metadata:
+      # Labels used for grouping and selecting objects
       labels:
+        # Application label
         app: postgres
+        # Tier label for grouping related components
         tier: data
+    # Desired state of this object
     spec:
+      # Container definitions in the pod
       containers:
         - name: postgres
+          # Container image to run
           image: postgres:16-alpine
+          # Ports exposed by this object or container
           ports:
             - name: postgres
+              # Port exposed by the container
               containerPort: 5432
+          # Environment variables for the container
           env:
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
+                  # Name of the object or container
                   name: app-secrets
                   key: POSTGRES_DB
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
+                  # Name of the object or container
                   name: app-secrets
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  # Name of the object or container
                   name: app-secrets
                   key: POSTGRES_PASSWORD
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
           readinessProbe:
             exec:
+              # Container startup command
               command:
                 - sh
                 - -c
                 - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
             initialDelaySeconds: 8
             periodSeconds: 5
+          # CPU/memory requests and limits or other resource settings
           resources:
+            # Guaranteed resources requested for scheduling
             requests:
               cpu: "100m"
               memory: "256Mi"
+            # Maximum resources the container may use
             limits:
               cpu: "500m"
               memory: "512Mi"
+          # Mount points for volumes inside the container
           volumeMounts:
             - name: postgres-ephemeral
               mountPath: /var/lib/postgresql/data
+      # Persistent volumes or Compose volumes
       volumes:
         - name: postgres-ephemeral
           emptyDir: {}

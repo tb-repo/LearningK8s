@@ -1,0 +1,30 @@
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+kind: PersistentVolume
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: postgres-static-hostpath-pv
+  # Labels used for grouping and selecting objects
+  labels:
+    # Application label
+    app: postgres
+    storage-demo: static
+# Desired state of this object
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  # Allowed access mode(s) for the volume
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  # StorageClass used for dynamic provisioning
+  storageClassName: manual
+  # Host path volume source
+  hostPath:
+    # Filesystem path for a volume
+    path: /tmp/k8s-three-tier-postgres
+    type: DirectoryOrCreate
+

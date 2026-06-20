@@ -1,0 +1,55 @@
+# API version of this Kubernetes object
+apiVersion: apps/v1
+# Type of Kubernetes resource
+kind: Deployment
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: pending-pods-inflate
+  # Namespace in which the object is created
+  namespace: app-scaling-prod
+  # Labels used for grouping and selecting objects
+  labels:
+    # Application label
+    app: pending-pods-inflate
+    scaling-demo: node-autoscaling
+# Desired state of this object
+spec:
+  # Desired number of pod replicas
+  replicas: 12
+  # Selector used to choose matching pods or objects
+  selector:
+    # Label matching rules for selectors
+    matchLabels:
+      # Application label
+      app: pending-pods-inflate
+      scaling-demo: node-autoscaling
+  # Pod template for controllers like Deployment/StatefulSet
+  template:
+    # Object metadata: name, namespace, labels, annotations
+    metadata:
+      # Labels used for grouping and selecting objects
+      labels:
+        # Application label
+        app: pending-pods-inflate
+        scaling-demo: node-autoscaling
+    # Desired state of this object
+    spec:
+      terminationGracePeriodSeconds: 0
+      # Container definitions in the pod
+      containers:
+        - name: pause
+          # Container image to run
+          image: public.ecr.aws/eks-distro/kubernetes/pause:3.7
+          # When Kubernetes pulls the container image
+          imagePullPolicy: IfNotPresent
+          # CPU/memory requests and limits or other resource settings
+          resources:
+            # Guaranteed resources requested for scheduling
+            requests:
+              cpu: "800m"
+              memory: "64Mi"
+            # Maximum resources the container may use
+            limits:
+              cpu: "800m"
+              memory: "128Mi"

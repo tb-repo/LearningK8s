@@ -1,0 +1,23 @@
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+kind: ResourceQuota
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: scaling-quota
+  # Namespace in which the object is created
+  namespace: app-scaling-prod
+# Desired state of this object
+spec:
+  hard:
+    pods: "50"
+    requests.cpu: "20"
+    requests.memory: "24Gi"
+    limits.cpu: "40"
+    limits.memory: "48Gi"
+    services: "20"
+    services.loadbalancers: "2"
+    persistentvolumeclaims: "10"
+    configmaps: "30"
+    secrets: "30"

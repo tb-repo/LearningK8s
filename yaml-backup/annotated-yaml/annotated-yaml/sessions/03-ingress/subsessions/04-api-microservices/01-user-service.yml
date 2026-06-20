@@ -1,0 +1,172 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: apps/v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: Deployment
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: user-service
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: app-ingress
+  # Labels used for grouping and selecting objects
+  # Labels used for grouping and selecting objects
+  labels:
+    app: user-service
+    tier: api
+    microservice: users
+# Desired state of this object
+# Desired state of this object
+spec:
+  # Desired number of pod replicas
+  # Desired number of pod replicas
+  replicas: 2
+  # Selector used to choose matching pods or objects
+  # Selector used to choose matching pods or objects
+  selector:
+    # Label matching rules for selectors
+    # Label matching rules for selectors
+    matchLabels:
+      app: user-service
+      tier: api
+      microservice: users
+  # Pod template for controllers like Deployment/StatefulSet
+  # Pod template for controllers like Deployment/StatefulSet
+  template:
+    # Object metadata: name, namespace, labels, annotations
+    # Object metadata: name, namespace, labels, annotations
+    metadata:
+      # Labels used for grouping and selecting objects
+      # Labels used for grouping and selecting objects
+      labels:
+        app: user-service
+        tier: api
+        microservice: users
+    # Desired state of this object
+    # Desired state of this object
+    spec:
+      # Container definitions in the pod
+      # Container definitions in the pod
+      containers:
+        - name: user-service
+          # Container image to run
+          # Container image to run
+          image: prashantdey/appk8stutorial:user-svc-2.0
+          # When Kubernetes pulls the container image
+          # When Kubernetes pulls the container image
+          imagePullPolicy: IfNotPresent
+          # Ports exposed by this object or container
+          # Ports exposed by this object or container
+          ports:
+            - name: http
+              # Port exposed by the container
+              # Port exposed by the container
+              containerPort: 5001
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  # Name of the object or container
+                  # Name of the object or container
+                  name: app-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  # Name of the object or container
+                  # Name of the object or container
+                  name: app-config
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  # Name of the object or container
+                  # Name of the object or container
+                  name: app-secrets
+                  key: POSTGRES_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  # Name of the object or container
+                  # Name of the object or container
+                  name: app-secrets
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  # Name of the object or container
+                  # Name of the object or container
+                  name: app-secrets
+                  key: POSTGRES_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              # Port exposed by the Service or container
+              # Port exposed by the Service or container
+              port: 5001
+            initialDelaySeconds: 8
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              # Port exposed by the Service or container
+              # Port exposed by the Service or container
+              port: 5001
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          # CPU/memory requests and limits or other resource settings
+          # CPU/memory requests and limits or other resource settings
+          resources:
+            # Guaranteed resources requested for scheduling
+            # Guaranteed resources requested for scheduling
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            # Maximum resources the container may use
+            # Maximum resources the container may use
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: Service
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: user-service
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: app-ingress
+# Desired state of this object
+# Desired state of this object
+spec:
+  type: ClusterIP
+  # Selector used to choose matching pods or objects
+  # Selector used to choose matching pods or objects
+  selector:
+    app: user-service
+    tier: api
+    microservice: users
+  # Ports exposed by this object or container
+  # Ports exposed by this object or container
+  ports:
+    - name: http
+      # Network protocol for the port
+      # Network protocol for the port
+      protocol: TCP
+      # Port exposed by the Service or container
+      # Port exposed by the Service or container
+      port: 5001
+      # Destination port on the container for Service traffic
+      # Destination port on the container for Service traffic
+      targetPort: 5001

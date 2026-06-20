@@ -1,0 +1,123 @@
+# API version of this Kubernetes object
+apiVersion: apps/v1
+# Type of Kubernetes resource
+kind: Deployment
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: frontend
+  # Namespace in which the object is created
+  namespace: app-ingress
+  # Labels used for grouping and selecting objects
+  labels:
+    # Application label
+    app: frontend
+    # Tier label for grouping related components
+    tier: presentation
+# Desired state of this object
+spec:
+  # Desired number of pod replicas
+  replicas: 2
+  # Selector used to choose matching pods or objects
+  selector:
+    # Label matching rules for selectors
+    matchLabels:
+      # Application label
+      app: frontend
+      # Tier label for grouping related components
+      tier: presentation
+  # Pod template for controllers like Deployment/StatefulSet
+  template:
+    # Object metadata: name, namespace, labels, annotations
+    metadata:
+      # Labels used for grouping and selecting objects
+      labels:
+        # Application label
+        app: frontend
+        # Tier label for grouping related components
+        tier: presentation
+    # Desired state of this object
+    spec:
+      # Container definitions in the pod
+      containers:
+        - name: frontend
+          # Container image to run
+          image: prashantdey/appk8stutorial:frontend-svc-2.0
+          # When Kubernetes pulls the container image
+          imagePullPolicy: IfNotPresent
+          # Ports exposed by this object or container
+          ports:
+            - name: http
+              # Port exposed by the container
+              containerPort: 5000
+          # Environment variables for the container
+          env:
+            - name: USER_SERVICE_URL
+              value: http://user-service:5001/api/users
+            - name: APP_SERVICE_URL
+              value: http://app-service:5002/api/apps
+            - name: USER_SERVICE_HEALTH_URL
+              value: http://user-service:5001/readyz
+            - name: APP_SERVICE_HEALTH_URL
+              value: http://app-service:5002/readyz
+            - name: FLASK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  # Name of the object or container
+                  name: app-secrets
+                  key: FLASK_SECRET_KEY
+          readinessProbe:
+            httpGet:
+              # Filesystem path for a volume
+              path: /readyz
+              # Port exposed by the Service or container
+              port: 5000
+            initialDelaySeconds: 8
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              # Filesystem path for a volume
+              path: /healthz
+              # Port exposed by the Service or container
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          # CPU/memory requests and limits or other resource settings
+          resources:
+            # Guaranteed resources requested for scheduling
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            # Maximum resources the container may use
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+kind: Service
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  name: frontend
+  # Namespace in which the object is created
+  namespace: app-ingress
+# Desired state of this object
+spec:
+  type: ClusterIP
+  # Selector used to choose matching pods or objects
+  selector:
+    # Application label
+    app: frontend
+    # Tier label for grouping related components
+    tier: presentation
+  # Ports exposed by this object or container
+  ports:
+    - name: http
+      # Network protocol for the port
+      protocol: TCP
+      # Port exposed by the Service or container
+      port: 80
+      # Destination port on the container for Service traffic
+      targetPort: 5000

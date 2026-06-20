@@ -1,0 +1,19 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: ConfigMap
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: app-config
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: tb-app-storage
+data:
+  DB_HOST: postgres
+  DB_PORT: "5432"
+

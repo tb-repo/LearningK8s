@@ -1,0 +1,53 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: autoscaling.k8s.io/v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: VerticalPodAutoscaler
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: vpa-demo
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: app-autoscaling
+  # Labels used for grouping and selecting objects
+  # Labels used for grouping and selecting objects
+  labels:
+    app: vpa-demo
+    autoscaling-demo: vpa
+# Desired state of this object
+# Desired state of this object
+spec:
+  # Object referenced by autoscaler
+  # Object referenced by autoscaler
+  targetRef:
+    # API version of this Kubernetes object
+    # API version of this Kubernetes object
+    apiVersion: apps/v1
+    # Type of Kubernetes resource
+    # Type of Kubernetes resource
+    kind: Deployment
+    # Name of the object or container
+    # Name of the object or container
+    name: vpa-demo
+  # How the VPA should apply recommended changes
+  # How the VPA should apply recommended changes
+  updatePolicy:
+    updateMode: "Recreate"
+  # Resource constraints for VPA-managed containers
+  # Resource constraints for VPA-managed containers
+  resourcePolicy:
+    containerPolicies:
+      - containerName: vpa-demo
+        controlledResources:
+          - cpu
+          - memory
+        minAllowed:
+          cpu: "25m"
+          memory: "64Mi"
+        maxAllowed:
+          cpu: "1"
+          memory: "512Mi"

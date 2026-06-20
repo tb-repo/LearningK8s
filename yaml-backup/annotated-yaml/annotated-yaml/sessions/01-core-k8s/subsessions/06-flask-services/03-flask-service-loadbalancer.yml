@@ -1,0 +1,38 @@
+# API version of this Kubernetes object
+# API version of this Kubernetes object
+apiVersion: v1
+# Type of Kubernetes resource
+# Type of Kubernetes resource
+kind: Service
+# Object metadata: name, namespace, labels, annotations
+# Object metadata: name, namespace, labels, annotations
+metadata:
+  # Name of the object or container
+  # Name of the object or container
+  name: flask-web-loadbalancer
+  # Namespace in which the object is created
+  # Namespace in which the object is created
+  namespace: tb-app-core
+# Desired state of this object
+# Desired state of this object
+spec:
+  type: LoadBalancer
+  # Selector used to choose matching pods or objects
+  # Selector used to choose matching pods or objects
+  selector:
+    app: flask-web
+    tier: application
+  # Ports exposed by this object or container
+  # Ports exposed by this object or container
+  ports:
+    - name: http
+      # Network protocol for the port
+      # Network protocol for the port
+      protocol: TCP
+      # Port exposed by the Service or container
+      # Port exposed by the Service or container
+      port: 80
+      # Destination port on the container for Service traffic
+      # Destination port on the container for Service traffic
+      targetPort: 5000
+
