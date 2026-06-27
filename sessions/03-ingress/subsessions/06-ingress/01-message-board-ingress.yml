@@ -7,7 +7,7 @@ metadata:
   # Name of the object or container
   name: message-board-ingress
   # Namespace in which the object is created
-  namespace: app-ingress
+  namespace: tb-app-ingress
   # Annotations for non-identifying metadata
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing

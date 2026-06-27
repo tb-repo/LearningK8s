@@ -91,3 +91,14 @@ kubectl delete -f subsessions/01-namespace/ --ignore-not-found
 5. What does a Deployment add on top of Pods?
 6. How does a Service know which Pods should receive traffic?
 
+
+ 
+## Review Answers
+
+1. To isolate resources for the lab scope and make cleanup/management easier.
+2. ConfigMap for non-sensitive config; Secret for credentials and sensitive values.
+3. A Service gives PostgreSQL a stable network name/IP so other Pods can connect reliably.
+4. A standalone Pod has no self-healing, scaling, or rolling-update capabilities.
+5. A Deployment adds replica management, rolling updates, and declarative desired state.
+6. A Service matches Pod labels using its selector to decide which Pods receive traffic.
+

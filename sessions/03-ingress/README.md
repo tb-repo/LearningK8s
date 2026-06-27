@@ -60,11 +60,129 @@ This lesson uses:
 ingressClassName: alb
 ```
 
+## To create an Application Load Balancer as it if it is not created yet:
+
+```bash
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json" -OutFile "iam_policy.json"
+```
+
+## Create the AWS IAM Policy
+
+```bash
+aws iam create-policy --policy-name TBAWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+```
+## Get the ARN of the policy:
+
+Eg:
+"Arn": "arn:aws:iam::386346184566:policy/TBAWSLoadBalancerControllerIAMPolicy"
+
+## 2. Create an IAM Role and Service Account using eksctlThis links a Kubernetes service account to the AWS IAM policy:
+
+a. Activate the OIDC Provider
+
+Execute the exact:
+```bash
+eksctl utils associate-iam-oidc-provider --region=ap-south-1 --cluster=tb-k8s-cluster-1 --approve
+```
+b. Create IAM Service Account:
+
+```bash
+eksctl create iamserviceaccount `
+  --cluster=tb-k8s-cluster-1 `
+  --namespace=kube-system `
+  --name=aws-load-balancer-controller `
+  --role-name TBAmazonEKSLoadBalancerControllerRole `
+  --attach-policy-arn=arn:aws:iam::376432388605:policy/TBAWSLoadBalancerControllerIAMPolicy `
+  --approve
+  ```
+
+## Install via Helm
+
+Add the repository and install the controller inside the kube-system namespace:
+
+# Add EKS charts
+
+```bash
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update eks
+```
+## Install the controller (the chart automatically deploys the alb IngressClass)
+
+```bash
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller `
+  -n kube-system `
+  --set clusterName=tb-k8s-cluster-1 `
+  --set serviceAccount.create=false `
+  --set serviceAccount.name=aws-load-balancer-controller
+```
+Check whether an IngressClass exists now:
+
+```bash
+kubectl get ingressclass
+```
 ## Sub-Session Order
 
 Follow the sub-sessions in this order:
 
 1. `subsessions/01-shared-config`: create Namespace, ConfigMap, and Secret.
+
+Before moving to point 5 create the required role for the EKS to use EBS:
+
+```bash
+eksctl utils associate-iam-oidc-provider --region=ap-south-1 --cluster=tb-k8s-cluster-1 --approve
+```
+
+```bash
+eksctl create iamserviceaccount `
+  --name ebs-csi-controller-sa `
+  --namespace kube-system `
+  --cluster=tb-k8s-cluster-1 `
+  --region=ap-south-1 `
+  --attach-policy-arn=arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy `
+  --approve `
+  --role-only `
+  --role-name TB_EKS_EBS_CSI_DriverRole
+  ```
+
+Install or Update the AWS EBS Add-ons
+
+```bash
+eksctl create addon --cluster=tb-k8s-cluster-1 --region=ap-south-1 --name=eks-pod-identity-agent
+```
+
+```bash
+aws iam update-assume-role-policy --role-name TB_EKS_EBS_CSI_DriverRole --policy-document file://iam_trust_policy.json
+```
+
+```bash
+eksctl create podidentityassociation `
+  --cluster=tb-k8s-cluster-1 `
+  --region=ap-south-1 `
+  --namespace=kube-system `
+  --service-account-name=ebs-csi-controller-sa `
+  --role-arn=arn:aws:iam::376432388605:role/TB_EKS_EBS_CSI_DriverRole
+```
+```bash
+eksctl create addon `
+  --name aws-ebs-csi-driver `
+  --cluster=tb-k8s-cluster-1 `
+  --region=ap-south-1 `
+  --force
+```
+
+Wait for the add-on to get successfully created.
+
+```bash
+kubectl get pods -n kube-system
+```
+Check whether ebs-csi is getting listed and running successfully.
+
+Verify the EBS Controller Pods:
+
+```bash
+kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-ebs-csi-driver
+```
+
 2. `subsessions/02-storageclass`: create the EKS gp3 StorageClass.
 3. `subsessions/03-postgres-statefulset`: run PostgreSQL as a StatefulSet.
 4. `subsessions/04-api-microservices`: deploy `user-service` and `app-service` as internal Services on different ports.
@@ -105,7 +223,8 @@ kubectl apply -f subsessions/06-ingress/
 ## Get The Load Balancer Address
 
 ```bash
-kubectl get ingress -n app-ingress
+kubectl get ingress -n tb-app-ingress
+kubectl get pods -n tb-app-ingress
 ```
 
 Wait until the `ADDRESS` column is populated. Then test:
@@ -147,3 +266,11 @@ kubectl delete -f subsessions/01-shared-config/ --ignore-not-found
 3. Why is `/api/users` routed to a different Service from `/api/apps`?
 4. Why does the frontend call APIs by Kubernetes Service DNS inside the cluster?
 5. How would a custom domain point to the Ingress load balancer?
+
+## Review Answers
+
+1. They are internal backends; Ingress exposes external access and routes to ClusterIP Services.
+2. An external Load Balancer (ELB/NLB) and related cloud resources (target groups, security groups).
+3. Ingress path rules map different URL paths to different backend Services.
+4. Service DNS provides stable, internal service discovery without external routing.
+5. Point the custom domain's DNS (A/CNAME) to the load balancer's DNS name or IP.

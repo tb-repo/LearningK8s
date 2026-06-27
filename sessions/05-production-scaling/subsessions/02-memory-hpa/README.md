@@ -100,3 +100,10 @@ kubectl delete -f subsessions/02-memory-hpa/ --ignore-not-found
 2. Why can memory scale-down be slower than CPU scale-down?
 3. When is memory a good scaling signal?
 4. Why should you keep `maxReplicas` conservative?
+
+## Review Answers
+
+1. Memory HPA needs requests to establish a baseline for percentage calculations.
+2. Memory usage doesn't drop as predictably as CPU and aggressive downscaling can trigger OOMs.
+3. When memory usage correlates with load (caches, in-memory buffers) and signals capacity needs.
+4. To limit cost and avoid runaway provisioning that exhausts cluster resources.

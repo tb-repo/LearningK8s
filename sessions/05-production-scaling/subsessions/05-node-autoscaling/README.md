@@ -292,3 +292,13 @@ Node scale-down is intentionally slower than scale-up. Autoscalers wait to avoid
 5. Why does EKS Auto Mode need the `eks.amazonaws.com/compute-type: auto` selector in the sample?
 6. Why should scale-down be slower than scale-up?
 7. What cost risk appears if you forget to delete an inflate workload?
+
+## Review Answers
+
+1. Pods go Pending when the scheduler can't find suitable Nodes (capacity, labels, taints) or quota blocks them.
+2. HPA adjusts replica counts but doesn't provision new nodes; without nodes, Pods remain Pending.
+3. Cluster Autoscaler changes Auto Scaling Group sizes (adds/removes EC2 nodes).
+4. Karpenter provisions cloud instances (nodes) and registers them with the cluster.
+5. The selector marks workloads eligible for Auto Mode to identify/manage automatically provisioned compute.
+6. Slower scale-down avoids flapping and accidental removal of capacity needed shortly after scale-up.
+7. You can incur ongoing cloud costs from unused provisioned nodes if you forget to delete inflate workloads.

@@ -300,6 +300,18 @@ Common causes:
 8. When would you use VPA only for recommendations?
 9. What must happen at the node layer if HPA creates more Pods than the cluster can schedule?
 
+## Review Answers
+
+1. `spec.replicas` on the Deployment (HPA updates the desired replica count).
+2. HPA needs CPU requests to compute percent utilization against a known baseline.
+3. The Pod reports 100% utilization; HPA may scale if the target is lower; scheduler reserved that CPU.
+4. Stateless web apps tolerate replica churn and can scale horizontally without local state.
+5. VPA is an add-on with eviction/recreation semantics and policy complexity, so it's optional.
+6. `Off` only records recommendations; `Recreate` evicts and recreates pods to apply new requests.
+7. VPA changing requests alters HPA's utilization math, so both controllers can fight over replicas.
+8. When you want human review of recommendations or to avoid automatic evictions.
+9. Node capacity must be added (manual, Cluster Autoscaler, Karpenter) or Pods remain Pending.
+
 ## References
 
 - Kubernetes HPA documentation: `https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/`

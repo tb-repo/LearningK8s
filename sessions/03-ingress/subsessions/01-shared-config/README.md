@@ -4,7 +4,7 @@ This sub-session creates the namespace and shared configuration for the ingress 
 
 ## Objects Created
 
-- Namespace: `app-ingress`
+- Namespace: `tb-app-ingress`
 - ConfigMap: `app-config`
 - Secret: `app-secrets`
 

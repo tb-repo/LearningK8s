@@ -117,3 +117,10 @@ kubectl delete -f subsessions/01-resource-guardrails/ --ignore-not-found
 2. Why does HPA need resource requests?
 3. What happens when a Deployment tries to create Pods beyond quota?
 4. Why is a namespace-level quota useful in a shared cluster?
+
+## Review Answers
+
+1. LimitRange sets per-Pod/container defaults and limits; ResourceQuota caps total resource consumption in a namespace.
+2. HPA needs requests to calculate percent utilization against a known baseline.
+3. Pod creation is rejected or Pending; the API returns quota errors and events are emitted.
+4. Namespace-level quotas enforce fair sharing and prevent a tenant from exhausting cluster resources.

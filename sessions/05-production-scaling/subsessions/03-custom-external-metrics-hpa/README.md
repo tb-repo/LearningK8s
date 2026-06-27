@@ -175,3 +175,11 @@ kubectl delete -f subsessions/03-custom-external-metrics-hpa/01-custom-metric-de
 3. What is the difference between custom and external metrics?
 4. Why must metric labels map cleanly to Kubernetes resources?
 5. Why does HPA choose the highest recommendation when multiple metrics are configured?
+
+## Review Answers
+
+1. Queue length/backlog, not CPU, better indicates pending work for a queue worker.
+2. A metrics adapter exposes custom/external metrics to the Kubernetes metrics API for HPA to consume.
+3. Custom metrics map to k8s objects (pods/services); external metrics are global/external to Kubernetes objects.
+4. So HPA can correlate metric values to the resources it should scale.
+5. HPA takes the highest recommendation to satisfy all scaling constraints and meet the most demanding metric.

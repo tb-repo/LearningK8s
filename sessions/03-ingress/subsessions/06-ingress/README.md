@@ -23,14 +23,14 @@ kubectl apply -f subsessions/06-ingress/
 ## Check
 
 ```bash
-kubectl get ingress -n app-ingress
-kubectl describe ingress message-board-ingress -n app-ingress
+kubectl get ingress -n tb-app-ingress
+kubectl describe ingress message-board-ingress -n tb-app-ingress
 ```
 
 Wait until an address appears:
 
 ```bash
-kubectl get ingress message-board-ingress -n app-ingress
+kubectl get ingress message-board-ingress -n tb-app-ingress
 ```
 
 ## Test

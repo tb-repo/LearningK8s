@@ -147,6 +147,16 @@ kubectl delete -f subsessions/01-prerequisites-and-namespace/ --ignore-not-found
 6. If a cluster has four eligible Nodes, how many Pods should one DaemonSet create?
 7. Why is a Deployment better than a DaemonSet for a stateless web API?
 
+## Review Answers
+
+1. The Deployment's `spec.replicas` (or HPA if configured).
+2. The DaemonSet creates one Pod per eligible Node matching its selectors/affinity/taints.
+3. It ensures a log-collector runs on every Node so local logs are gathered.
+4. The DaemonSet controller schedules a Pod onto the new eligible Node.
+5. Shared selectors cause controller ownership conflicts and unpredictable pod management.
+6. Four Pods — one on each eligible Node.
+7. Deployments control replica counts, support rolling updates and scaling independent of node topology.
+
 ## References
 
 - Kubernetes DaemonSet documentation: `https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/`

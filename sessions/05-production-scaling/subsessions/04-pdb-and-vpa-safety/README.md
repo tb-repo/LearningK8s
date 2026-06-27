@@ -117,3 +117,11 @@ kubectl delete -f subsessions/04-pdb-and-vpa-safety/ --ignore-not-found
 3. Why does a single-replica app not get much protection from PDB?
 4. Why is `minAvailable: 100%` dangerous during node maintenance?
 5. How does PDB interact with node autoscaler scale-down?
+
+## Review Answers
+
+1. A voluntary disruption is an intentional eviction (rolling update, node drain, VPA eviction) that removes pods.
+2. VPA `Recreate` can evict pods; PDB prevents too many simultaneous evictions that would reduce availability.
+3. With one replica you can't maintain availability during evictions; PDB can't provide much protection.
+4. `minAvailable: 100%` blocks evictions and can prevent node drains or maintenance from proceeding.
+5. PDB can prevent node scale-down if evicting pods would violate the PDB constraints.

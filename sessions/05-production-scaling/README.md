@@ -127,6 +127,18 @@ Provider-specific node autoscaler components such as Karpenter and Cluster Autos
 8. What does EKS Auto Mode manage for you?
 9. What should you check when Pods are Pending?
 
+## Review Answers
+
+1. HPA cannot add nodes; an autoscaler or manual capacity change is required if no free node capacity exists.
+2. Pod creation is rejected or remains Pending and the API returns quota-related errors/events.
+3. LimitRange enforces defaults and limits for requests/limits, helping prevent oversized pods that starve resources.
+4. Memory doesn't drop predictably and can cause OOMs; CPU varies more smoothly, so autoscaling behavior differs.
+5. Use custom metrics when business- or app-specific signals (queue length, latency) better reflect load.
+6. PDB protects against too many voluntary evictions/rollouts that would reduce replicas below a threshold.
+7. Cluster Autoscaler adjusts ASG sizes; Karpenter provisions flexible nodes quickly with scheduling-aware decisions.
+8. EKS Auto Mode automates node provisioning and management for eligible workloads.
+9. Check node capacity, resource requests/limits, taints/tolerations, node selectors/affinity, events, and ResourceQuota.
+
 ## References
 
 - Kubernetes HPA documentation: `https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/`

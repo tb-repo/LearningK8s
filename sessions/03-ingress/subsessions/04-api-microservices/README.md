@@ -41,9 +41,9 @@ kubectl apply -f subsessions/04-api-microservices/
 ## Check
 
 ```bash
-kubectl get deployment -n app-ingress
-kubectl get service -n app-ingress
-kubectl get endpoints -n app-ingress
+kubectl get deployment -n tb-app-ingress
+kubectl get service -n tb-app-ingress
+kubectl get endpoints -n tb-app-ingress
 ```
 
 ## Internal Test

@@ -125,3 +125,11 @@ kubectl delete -f subsessions/03-deployment-and-daemonset-mix/ --ignore-not-foun
 3. Why does scaling the Deployment not change the DaemonSet?
 4. Why does the Service route only to the Deployment Pods?
 5. What could go wrong if both controllers used the same selector?
+
+## Review Answers
+
+1. The `Deployment` for `mix-web` (its `spec.replicas`).
+2. The `DaemonSet` for `mix-node-agent` (one Pod per matching Node).
+3. They are separate controllers; scaling the Deployment affects only its replicas.
+4. The Service's selector matches Deployment Pod labels, not the DaemonSet's labels.
+5. Both controllers would fight to manage the same Pods, causing ownership and lifecycle conflicts.

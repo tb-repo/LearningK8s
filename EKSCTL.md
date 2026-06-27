@@ -10,6 +10,11 @@ Create Cluster:
 eksctl create cluster --name tb-k8s-cluster-1 --region ap-south-1 --nodegroup-name standard-workers --node-type t3.medium --nodes 2 --nodes-min 2 --nodes-max 3
 ```
 
+Scaling Nodegroups:
+```bash
+eksctl scale nodegroup `  --cluster=tb-k8s-cluster-1 `  --region=ap-south-1 `  --name=standard-workers `  --nodes=4 `  --nodes-min=2 `  --nodes-max=5     
+```
+
 Configuring the kubectl with eks cluster:
 ```bash
 aws eks --region ap-south-1 update-kubeconfig --name tb-k8s-cluster-1

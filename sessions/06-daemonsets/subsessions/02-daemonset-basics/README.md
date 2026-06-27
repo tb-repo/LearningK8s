@@ -83,3 +83,10 @@ kubectl delete -f subsessions/02-daemonset-basics/ --ignore-not-found
 2. What happens if you delete a DaemonSet Pod?
 3. Why does a DaemonSet not have a `replicas` field?
 4. How could you limit a DaemonSet to only selected Nodes?
+
+## Review Answers
+
+1. The DaemonSet controller ensures one Pod is scheduled on each Node matching its selection rules.
+2. The controller will recreate the Pod on that Node unless the Node is gone or selectors changed.
+3. Pod count is derived from matching Nodes, so a fixed `replicas` field isn't applicable.
+4. Use `nodeSelector`, node affinity, or taints/tolerations to restrict matching Nodes.

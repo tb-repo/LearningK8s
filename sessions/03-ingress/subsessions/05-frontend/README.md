@@ -29,15 +29,15 @@ kubectl apply -f subsessions/05-frontend/
 ## Check
 
 ```bash
-kubectl get deployment frontend -n app-ingress
-kubectl get pods -n app-ingress -l app=frontend
-kubectl get service frontend -n app-ingress
+kubectl get deployment frontend -n tb-app-ingress
+kubectl get pods -n tb-app-ingress -l app=frontend
+kubectl get service frontend -n tb-app-ingress
 ```
 
 ## Internal Test
 
 ```bash
-kubectl port-forward -n app-ingress service/frontend 8080:80
+kubectl port-forward -n tb-app-ingress service/frontend 8080:80
 ```
 
 Open:
