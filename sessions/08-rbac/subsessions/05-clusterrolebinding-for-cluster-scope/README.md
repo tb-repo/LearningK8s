@@ -1,12 +1,10 @@
 # Sub-Session 05: ClusterRoleBinding For Cluster Scope
 
-This sub-session grants a ServiceAccount read-only access to a cluster-scoped
-resource.
+This sub-session grants a ServiceAccount read-only access to a cluster-scoped resource.
 
 ## Why ClusterRoleBinding Needs Care
 
-A `ClusterRoleBinding` grants access across the cluster. It is the right tool
-for cluster-scoped resources such as Nodes, but it should be reviewed carefully.
+A `ClusterRoleBinding` grants access across the cluster. It is the right tool for cluster-scoped resources such as Nodes, but it should be reviewed carefully.
 
 This lab grants only Node read access:
 
@@ -69,9 +67,7 @@ no
 
 ## Important Production Habit
 
-Avoid using `cluster-admin` for application workloads. If a workload needs
-cluster-level visibility, write the smallest possible ClusterRole and bind only
-the identity that needs it.
+Avoid using `cluster-admin` for application workloads. If a workload needs cluster-level visibility, write the smallest possible ClusterRole and bind only the identity that needs it.
 
 ## Cleanup
 

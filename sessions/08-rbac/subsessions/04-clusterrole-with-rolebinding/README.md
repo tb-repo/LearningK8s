@@ -4,11 +4,9 @@ This sub-session shows how a ClusterRole can be reused inside one Namespace.
 
 ## Why This Pattern Exists
 
-A `ClusterRole` is cluster-scoped, but not every use of a ClusterRole grants
-cluster-wide access.
+A `ClusterRole` is cluster-scoped, but not every use of a ClusterRole grants cluster-wide access.
 
-When a namespaced `RoleBinding` points to a `ClusterRole`, the permissions apply
-only inside the RoleBinding's Namespace.
+When a namespaced `RoleBinding` points to a `ClusterRole`, the permissions apply only inside the RoleBinding's Namespace.
 
 ```text
 ClusterRole workload-viewer
@@ -84,8 +82,7 @@ no
 no
 ```
 
-The ClusterRole is reusable, but the RoleBinding keeps this grant inside
-`rbac-lab`.
+The ClusterRole is reusable, but the RoleBinding keeps this grant inside `rbac-lab`.
 
 ## Cleanup
 

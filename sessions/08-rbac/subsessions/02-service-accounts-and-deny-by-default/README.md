@@ -1,7 +1,6 @@
 # Sub-Session 02: Service Accounts And Deny By Default
 
-This sub-session creates three ServiceAccounts and shows that creating an
-identity does not automatically grant useful permissions.
+This sub-session creates three ServiceAccounts and shows that creating an identity does not automatically grant useful permissions.
 
 ## What This Lab Creates
 

@@ -10,8 +10,7 @@ Authorization answers: what are you allowed to do?
 RBAC answers authorization with Roles, ClusterRoles, RoleBindings, and ClusterRoleBindings.
 ```
 
-In this session, students create ServiceAccounts, prove that they have no useful
-permissions by default, then grant least-privilege access one step at a time.
+In this session, students create ServiceAccounts, prove that they have no useful permissions by default, then grant least-privilege access one step at a time.
 
 ## RBAC Building Blocks
 
@@ -174,14 +173,39 @@ kubectl delete -f subsessions/01-prerequisites-and-namespace/ --ignore-not-found
 ## Review Questions
 
 1. What is the difference between authentication and authorization?
+ANS: Authentication vs. AuthorizationAuthentication (AuthN) verifies who you are (identity).Authorization (AuthZ) determines what you can do (permissions).
 2. Why should most application Pods use a dedicated ServiceAccount?
+ANS:Dedicated ServiceAccounts for Pods
+Isolation: Prevents one compromised Pod from accessing other resources.
+Least Privilege: Limits permissions strictly to what that specific application needs.
+Auditability: Makes tracking actions in logs easier by separating identities.
 3. What is the difference between a Role and a ClusterRole?
+ANS: Role vs. ClusterRoleRole: Namespaced resource. Grants access within a specific Namespace only.
+ClusterRole: Cluster-scoped resource. Grants access across all Namespaces or to cluster-wide resources (like Nodes).
 4. What is the difference between a RoleBinding and a ClusterRoleBinding?
+ANS: RoleBinding vs. ClusterRoleBindingRoleBinding: Assigns permissions (from a Role or ClusterRole) within a specific Namespace.
+ClusterRoleBinding: Assigns permissions cluster-wide across all Namespaces.
 5. Why does a RoleBinding to a ClusterRole still only grant access in one Namespace?
+ANS: RoleBinding to a ClusterRole ScopeBinding Context: 
+The RoleBinding object itself is bound to a specific Namespace.Namespace Limitation: It applies the ClusterRole's permissions only within that binding's Namespace.
+Efficiency: Reuses common permission templates without duplicating Roles in every Namespace.
 6. Why is granting `get`, `list`, and `watch` safer than granting `*`?
+ANS: Specific Verbs vs. Wildcards (*)Least Privilege: 
+Wildcards grant powerful administrative actions like delete and update.
+Risk Reduction: get, list, and watch only allow reading data.Blast Radius: Prevents accidental or malicious modification and deletion of resources.
 7. Why should access to Secrets be treated carefully?
+ANS: Protecting SecretsSensitive Data: 
+Secrets hold passwords, private keys, and API tokens.
+Privilege Escalation: Access to Secrets can allow attackers to impersonate admin users.
+External Risk: Compromised tokens can expose connected cloud infrastructure and databases.
 8. Why should ClusterRoleBindings be reviewed more carefully than RoleBindings?
+ANS: Reviewing ClusterRoleBindings Carefully
+Cluster-Wide Impact: They grant permissions across the entire cluster.
+Data Exposure: A single mistake can expose sensitive data in all current and future Namespaces.No Boundaries: They bypass the logical isolation provided by Namespaces. 
 9. In EKS, what is the difference between Kubernetes RBAC and AWS IAM?
+ANS:Kubernetes RBAC vs. AWS IAM in EKS
+Kubernetes RBAC: Controls actions inside the cluster (e.g., creating Pods, reading ConfigMaps).
+AWS IAM: Controls actions outside the cluster (e.g., creating EC2 instances, accessing ECR registries).
 
 ## References
 
